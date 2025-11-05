@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTP to Moonshot Workshop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        .progress-bar {
+            display: flex;
+            background: #f0f0f0;
+            padding: 20px;
+            gap: 10px;
+        }
+        
+        .progress-step {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: #e0e0e0;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .progress-step.active {
+            background: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .progress-step.completed {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .step-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .step-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .step-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .step-header h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .step-header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .prompt-box {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        
+        .prompt-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .example-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4CAF50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+        }
+        
+        .example-box strong {
+            color: #2e7d32;
+        }
+        
+        .bad-example-box {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+        }
+        
+        .bad-example-box strong {
+            color: #c62828;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #fafafa;
+        }
+        
+        .helper-questions {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .helper-questions h4 {
+            color: #e65100;
+            margin-bottom: 15px;
+        }
+        
+        .helper-questions li {
+            margin-left: 25px;
+            margin-bottom: 8px;
+            color: #666;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: space-between;
+        }
+        
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .tech-bank {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .tech-item {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tech-item:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .tech-item strong {
+            color: #667eea;
+        }
+        
+        .kill-list {
+            background: #fff;
+            border: 2px solid #f44336;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .kill-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #ffebee;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .kill-item input[type="radio"] {
+            margin-right: 10px;
+        }
+        
+        .summary-section {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        .summary-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .summary-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .summary-item p {
+            color: #333;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 From MTP to Moonshot</h1>
+            <p>Transform your passion into a bold solution</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-step active" onclick="goToStep(1)">Step 1: Problem</div>
+            <div class="progress-step" onclick="goToStep(2)">Step 2: Sci-Fi Fix</div>
+            <div class="progress-step" onclick="goToStep(3)">Step 3: Secret Weapon</div>
+            <div class="progress-step" onclick="goToStep(4)">Step 4: Kill It</div>
+            <div class="progress-step" onclick="goToStep(5)">Step 5: Reality Check</div>
+        </div>
+        
+        <div class="content">
+            <!-- Step 1: Find the Problem -->
+            <div class="step-section active" id="step1">
+                <div class="step-header">
+                    <h2>Step 1: Find a Real Problem</h2>
+                    <p>Your passion needs to connect to real problems. To find your problem, become a detective of daily frustrations.</p>
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>🎯 Your MTP Reminder</h3>
+                    <textarea id="mtp-reminder" placeholder="Type your MTP here to keep it in focus..."></textarea>
+                </div>
+                
+                <div class="helper-questions">
+                    <h4>📓 Your Problem-Finding Method</h4>
+                    <p><strong>Keep a journal where you notice what bothers or frustrates you and others.</strong></p>
+                    <ul>
+                        <li><strong>Observe:</strong> Watch people struggling with tasks. What makes them sigh, complain, or give up?</li>
+                        <li><strong>Ask:</strong> "What's the most annoying part of your day?" "What do you wish worked better?"</li>
+                        <li><strong>Experience:</strong> What problems do YOU face that connect to your passion?</li>
+                        <li><strong>Listen:</strong> What are people complaining about on social media, in conversations, in the news?</li>
+                        <li><strong>Notice patterns:</strong> What problems keep appearing in different forms?</li>
+                    </ul>
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>🔍 Your Problem Discovery</h3>
+                    <p>What problems have you observed or heard about? List 2-3 before choosing one:</p>
+                    <textarea id="problem-journal" placeholder="Problem 1: 
+Problem 2: 
+Problem 3:" rows="5"></textarea>
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>📍 Make Your Chosen Problem SPECIFIC</h3>
+                    <p>Pick ONE problem and make it concrete:</p>
+                    <textarea id="problem-where" placeholder="WHERE does this happen? (Be specific about location/context)"></textarea>
+                    <textarea id="problem-who" placeholder="WHO experiences this problem? (Specific people or groups)"></textarea>
+                    <textarea id="problem-waste" placeholder="WHAT harm does it cause? (Time lost? Money wasted? Stress? Missed opportunities?)"></textarea>
+                </div>
+                
+                <div class="example-box">
+                    <strong>✅ GOOD:</strong> "Small restaurant owners in Osaka lose 30% of their profit because they can't predict how much food to prepare, leading to waste or disappointed customers."
+                </div>
+                
+                <div class="bad-example-box">
+                    <strong>❌ BAD:</strong> "Food waste is a problem" (Too vague! Where? Who? What's the actual impact?)
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>✍️ Write Your Problem Statement</h3>
+                    <p>Combine everything into one clear sentence:</p>
+                    <textarea id="problem-statement" placeholder="[Specific group] at/in [specific context] struggle with [specific problem], causing [specific measurable harm]..."></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <span></span>
+                    <button class="btn-primary" onclick="nextStep()">Next: Dream the Solution →</button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Science Fiction Solution -->
+            <div class="step-section" id="step2">
+                <div class="step-header">
+                    <h2>Step 2: Dream the Anime Sci-Fi Solution</h2>
+                    <p>Forget "realistic"—imagine you have magic technology. What would completely DELETE this problem?</p>
+                </div>
+                
+                <div class="summary-section">
+                    <h3>Your Problem:</h3>
+                    <p id="problem-summary" style="font-style: italic;"></p>
+                </div>
+                
+                <div class="helper-questions">
+                    <h4>💭 Imagination Triggers</h4>
+                    <ul>
+                        <li>If you had Doraemon's pocket, what gadget would solve this?</li>
+                        <li>What would Tony Stark build for this problem?</li>
+                        <li>How would this work in a Studio Ghibli movie?</li>
+                        <li>What if the laws of physics didn't apply?</li>
+                        <li>What if cost and size didn't matter?</li>
+                    </ul>
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>🚀 Make it BOLD</h3>
+                    <p>Your solution should make people say "That's impossible!" Write ONE sentence:</p>
+                    <textarea id="scifi-solution" placeholder="Example: 'Shoes that let you walk through walls to avoid crowded hallways' or 'A bracelet that stops time for 10 seconds when you're about to miss the train'"></textarea>
+                </div>
+                
+                <div class="example-box">
+                    <strong>✅ BOLD:</strong> "Luggage that becomes weightless when you touch the handle, floating beside you like a balloon"
+                </div>
+                
+                <div class="bad-example-box">
+                    <strong>❌ BORING:</strong> "An app that shows train schedules" (Already exists! Think BIGGER!)
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>🎯 Reality Check</h3>
+                    <p>Does your solution DIRECTLY attack the problem from Step 1? Explain how:</p>
+                    <textarea id="solution-connection" placeholder="My solution eliminates the problem because..."></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="previousStep()">← Back</button>
+                    <button class="btn-primary" onclick="nextStep()">Next: Find Your Secret →</button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Secret Weapon -->
+            <div class="step-section" id="step3">
+                <div class="step-header">
+                    <h2>Step 3: Name Your Secret Weapon</h2>
+                    <p>What ONE breakthrough or change makes your crazy idea 10% less crazy? What's different about the world now?</p>
+                </div>
+                
+                <div class="summary-section">
+                    <h3>Your Sci-Fi Solution:</h3>
+                    <p id="solution-summary" style="font-style: italic;"></p>
+                </div>
+                
+                <div class="helper-questions">
+                    <h4>🔬 Research Recent Breakthroughs</h4>
+                    <p><strong>Your secret weapon doesn't have to be technology!</strong> It could be:</p>
+                    <ul>
+                        <li><strong>Technology:</strong> New materials, AI capabilities, sensors, biotech</li>
+                        <li><strong>Social shifts:</strong> Changed behaviors, new acceptance, generational differences</li>
+                        <li><strong>Business models:</strong> Sharing economy, subscriptions, crowdfunding</li>
+                        <li><strong>Institutional changes:</strong> New regulations, government programs, corporate policies</li>
+                        <li><strong>Human networks:</strong> Communities, movements, influencer culture</li>
+                        <li><strong>Novel combinations:</strong> Old tech used in new ways, unexpected partnerships</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>📚 Research suggestion:</strong> Search for "2024 breakthrough in [your problem area]" or visit innovation blogs like Peter Diamandis's Tech Blog, MIT Technology Review, or find Japanese innovations on NEDO or RIKEN sites.</p>
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>🔍 Research & Discover</h3>
+                    <p>What breakthroughs or changes have you found that relate to your problem? List 2-3:</p>
+                    <textarea id="research-findings" placeholder="Finding 1: 
+Finding 2: 
+Finding 3:" rows="5"></textarea>
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>⚡ Your Secret Weapon</h3>
+                    <p>Choose ONE breakthrough/change that best enables your solution:</p>
+                    <textarea id="secret-weapon" placeholder="Example: 'The gig economy mindset - people now trust strangers to deliver food, drive them, even stay in their homes'"></textarea>
+                </div>
+                
+                <div class="example-box">
+                    <strong>✅ Tech example:</strong> "CRISPR gene editing can now modify organisms in hours instead of years"<br>
+                    <strong>✅ Social example:</strong> "Gen Z openly discusses mental health, removing previous stigma"<br>
+                    <strong>✅ Combination example:</strong> "QR codes (old tech) + post-COVID habit of scanning everything"
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>🔗 Connect the Dots</h3>
+                    <p>Explain HOW this breakthrough enables your sci-fi solution:</p>
+                    <textarea id="weapon-explanation" placeholder="This breakthrough makes my solution possible because..."></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="previousStep()">← Back</button>
+                    <button class="btn-primary" onclick="nextStep()">Next: Kill Your Idea →</button>
+                </div>
+            </div>
+            
+            <!-- Step 4: Kill It -->
+            <div class="step-section" id="step4">
+                <div class="step-header">
+                    <h2>Step 4: Murder Your Moonshot</h2>
+                    <p>Time to attack your own idea! What are the top 3 ways it will definitely fail?</p>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-item">
+                        <h3>Your Solution:</h3>
+                        <p id="solution-summary2"></p>
+                    </div>
+                    <div class="summary-item">
+                        <h3>Your Secret Weapon:</h3>
+                        <p id="weapon-summary"></p>
+                    </div>
+                </div>
+                
+                <div class="helper-questions">
+                    <h4>💀 Failure Scenarios</h4>
+                    <ul>
+                        <li><strong>Technical:</strong> What breaks? What doesn't work as expected?</li>
+                        <li><strong>Human:</strong> Why would people hate it or refuse to use it?</li>
+                        <li><strong>Legal:</strong> What rules or laws would ban it?</li>
+                        <li><strong>Safety:</strong> How could it hurt someone?</li>
+                        <li><strong>Cost:</strong> Why would it be impossibly expensive?</li>
+                        <li><strong>Cultural:</strong> What social norms would reject it?</li>
+                    </ul>
+                </div>
+                
+                <div class="kill-list">
+                    <h3>☠️ List Your Top 3 Failure Points</h3>
+                    
+                    <div class="kill-item">
+                        <textarea id="kill1" placeholder="Failure #1: Example: 'Battery would die in 10 minutes of use'"></textarea>
+                    </div>
+                    
+                    <div class="kill-item">
+                        <textarea id="kill2" placeholder="Failure #2: Example: 'Electromagnetic field interferes with pacemakers'"></textarea>
+                    </div>
+                    
+                    <div class="kill-item">
+                        <textarea id="kill3" placeholder="Failure #3: Example: 'Cost would be ¥5,000,000 per unit'"></textarea>
+                    </div>
+                    
+                    <div class="prompt-box" style="margin-top: 20px; background: #ffebee;">
+                        <h3>🎯 Pick the SCARIEST One</h3>
+                        <p>Which failure would kill your idea even if everything else worked perfectly?</p>
+                        <select id="scariest-failure" style="width: 100%; padding: 10px; font-size: 16px; border-radius: 8px;">
+                            <option value="">Select the scariest failure...</option>
+                            <option value="1">Failure #1</option>
+                            <option value="2">Failure #2</option>
+                            <option value="3">Failure #3</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>🧪 Design a Quick Test</h3>
+                    <p>How could you test this ONE assumption in less than 48 hours with minimal resources?</p>
+                    <textarea id="test-design" placeholder="Example: 'Put a pacemaker simulator next to electromagnetic prototype for 30 minutes. Measure any signal interference using oscilloscope app on phone.'"></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="previousStep()">← Back</button>
+                    <button class="btn-primary" onclick="nextStep()">Next: Reality Plan →</button>
+                </div>
+            </div>
+            
+            <!-- Step 5: Test Plan -->
+            <div class="step-section" id="step5">
+                <div class="step-header">
+                    <h2>Step 5: The Reality Check</h2>
+                    <p>You're not building the product—you're planning how to test if you're completely wrong about ONE thing.</p>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-item">
+                        <h3>Your Scariest Assumption:</h3>
+                        <p id="scariest-summary"></p>
+                    </div>
+                    <div class="summary-item">
+                        <h3>Your Quick Test:</h3>
+                        <p id="test-summary"></p>
+                    </div>
+                </div>
+                
+                <div class="helper-questions">
+                    <h4>📋 Planning Your Prototype Test</h4>
+                    <ul>
+                        <li><strong>Mock-up:</strong> What's the simplest version that tests your assumption?</li>
+                        <li><strong>Materials:</strong> What everyday items could simulate your solution?</li>
+                        <li><strong>Location:</strong> Where's the real-world place to test?</li>
+                        <li><strong>Measurement:</strong> How will you know if it worked?</li>
+                        <li><strong>Participants:</strong> Who will you involve or observe?</li>
+                    </ul>
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>🔨 What You'll Build/Simulate</h3>
+                    <p>Describe your super-simple test version (remember: simple is good!):</p>
+                    <textarea id="build-plan" placeholder="Example: 'Use cardboard boxes to simulate the storage system, my phone timer to track time saved, and ask 5 friends to try it'"></textarea>
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>📍 Where & When You'll Test</h3>
+                    <p>Pick the actual location and time:</p>
+                    <textarea id="test-location" placeholder="Example: 'In my apartment kitchen on Saturday afternoon when roommates are cooking'"></textarea>
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>📊 Success Metrics</h3>
+                    <p>What simple result = success? What = failure?</p>
+                    <textarea id="success-metrics" placeholder="Example: 'SUCCESS: 3 out of 5 people say they would use it daily. FAILURE: Everyone says it's too complicated or annoying'"></textarea>
+                </div>
+                
+                <div class="example-box">
+                    <strong>✅ Good metrics:</strong> "People smile instead of frown" / "Task takes 2 minutes instead of 10" / "4 out of 5 say 'yes'"<br>
+                    <strong>❌ Too technical:</strong> "Signal disruption above 0.1mV" (Unless you're actually measuring this!)
+                </div>
+                
+                <div class="prompt-box">
+                    <h3>🚦 Next Steps</h3>
+                    <p>If your test SUCCEEDS, what's the next experiment? If it FAILS, what's Plan B?</p>
+                    <textarea id="next-steps" placeholder="IF SUCCESS: 'Try with more people in a busier location'\nIF FAILURE: 'Simplify the design or try a completely different approach'"></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="previousStep()">← Back</button>
+                    <button class="btn-primary" onclick="showSummary()">View Complete Moonshot →</button>
+                </div>
+            </div>
+            
+            <!-- Final Summary -->
+            <div class="step-section" id="summary">
+                <div class="step-header">
+                    <h2>🚀 Your Complete Moonshot Plan</h2>
+                    <p>Ready to share with the class!</p>
+                </div>
+                
+                <div class="summary-section">
+                    <div class="summary-item">
+                        <h3>1. Problem</h3>
+                        <p id="final-problem"></p>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <h3>2. Sci-Fi Solution</h3>
+                        <p id="final-solution"></p>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <h3>3. Secret Weapon</h3>
+                        <p id="final-weapon"></p>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <h3>4. Biggest Risk</h3>
+                        <p id="final-risk"></p>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <h3>5. Reality Check Test</h3>
+                        <p id="final-test"></p>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="goToStep(1)">← Start Over</button>
+                    <button class="btn-primary" onclick="exportSummary()">Export as PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentStep = 1;
+        
+        function goToStep(step) {
+            // Save current data
+            saveData();
+            
+            // Update progress bar
+            document.querySelectorAll('.progress-step').forEach((el, index) => {
+                el.classList.remove('active', 'completed');
+                if (index < step - 1) {
+                    el.classList.add('completed');
+                } else if (index === step - 1) {
+                    el.classList.add('active');
+                }
+            });
+            
+            // Show correct step
+            document.querySelectorAll('.step-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(step === 6 ? 'summary' : `step${step}`).classList.add('active');
+            
+            currentStep = step;
+            loadSummaries();
+        }
+        
+        function nextStep() {
+            if (currentStep < 5) {
+                goToStep(currentStep + 1);
+            }
+        }
+        
+        function previousStep() {
+            if (currentStep > 1) {
+                goToStep(currentStep - 1);
+            }
+        }
+        
+        function saveData() {
+            // Save all textarea values to localStorage
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                if (textarea.id) {
+                    localStorage.setItem(textarea.id, textarea.value);
+                }
+            });
+            
+            // Save select values
+            const selects = document.querySelectorAll('select');
+            selects.forEach(select => {
+                if (select.id) {
+                    localStorage.setItem(select.id, select.value);
+                }
+            });
+        }
+        
+        function loadData() {
+            // Load all saved values
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                if (textarea.id) {
+                    const saved = localStorage.getItem(textarea.id);
+                    if (saved) {
+                        textarea.value = saved;
+                    }
+                }
+            });
+            
+            const selects = document.querySelectorAll('select');
+            selects.forEach(select => {
+                if (select.id) {
+                    const saved = localStorage.getItem(select.id);
+                    if (saved) {
+                        select.value = saved;
+                    }
+                }
+            });
+        }
+        
+        function loadSummaries() {
+            // Load summaries for each step
+            const problemStatement = document.getElementById('problem-statement')?.value;
+            if (problemStatement) {
+                const problemSummary = document.getElementById('problem-summary');
+                if (problemSummary) {
+                    problemSummary.textContent = problemStatement;
+                }
+            }
+            
+            const scifiSolution = document.getElementById('scifi-solution')?.value;
+            if (scifiSolution) {
+                const solutionSummary = document.getElementById('solution-summary');
+                const solutionSummary2 = document.getElementById('solution-summary2');
+                if (solutionSummary) solutionSummary.textContent = scifiSolution;
+                if (solutionSummary2) solutionSummary2.textContent = scifiSolution;
+            }
+            
+            const secretWeapon = document.getElementById('secret-weapon')?.value;
+            if (secretWeapon) {
+                const weaponSummary = document.getElementById('weapon-summary');
+                if (weaponSummary) weaponSummary.textContent = secretWeapon;
+            }
+            
+            // Load scariest failure
+            const scariestSelect = document.getElementById('scariest-failure')?.value;
+            if (scariestSelect) {
+                const failureText = document.getElementById(`kill${scariestSelect}`)?.value;
+                if (failureText) {
+                    const scariestSummary = document.getElementById('scariest-summary');
+                    if (scariestSummary) scariestSummary.textContent = failureText;
+                }
+            }
+            
+            const testDesign = document.getElementById('test-design')?.value;
+            if (testDesign) {
+                const testSummary = document.getElementById('test-summary');
+                if (testSummary) testSummary.textContent = testDesign;
+            }
+        }
+        
+        function addToWeapon(element) {
+            const weaponField = document.getElementById('secret-weapon');
+            if (weaponField) {
+                const tech = element.querySelector('strong').textContent;
+                weaponField.value = tech + ': ' + weaponField.value;
+                weaponField.focus();
+            }
+        }
+        
+        function showSummary() {
+            saveData();
+            
+            // Populate final summary
+            document.getElementById('final-problem').textContent = 
+                document.getElementById('problem-statement').value || 'Not completed';
+            
+            document.getElementById('final-solution').textContent = 
+                document.getElementById('scifi-solution').value || 'Not completed';
+            
+            document.getElementById('final-weapon').textContent = 
+                document.getElementById('secret-weapon').value || 'Not completed';
+            
+            const scariestNum = document.getElementById('scariest-failure').value;
+            document.getElementById('final-risk').textContent = 
+                scariestNum ? document.getElementById(`kill${scariestNum}`).value : 'Not selected';
+            
+            document.getElementById('final-test').textContent = 
+                document.getElementById('test-design').value || 'Not completed';
+            
+            goToStep(6);
+        }
+        
+        function exportSummary() {
+            saveData();
+            const content = `
+MOONSHOT PLAN
+=============
+
+MTP: ${document.getElementById('mtp-reminder').value}
+
+1. PROBLEM
+${document.getElementById('problem-statement').value}
+
+2. SCI-FI SOLUTION
+${document.getElementById('scifi-solution').value}
+
+3. SECRET WEAPON
+${document.getElementById('secret-weapon').value}
+
+4. BIGGEST RISK
+${document.getElementById(`kill${document.getElementById('scariest-failure').value}`).value}
+
+5. REALITY CHECK TEST
+${document.getElementById('test-design').value}
+
+TEST DETAILS:
+- What to build: ${document.getElementById('build-plan').value}
+- Where to test: ${document.getElementById('test-location').value}
+- Success metrics: ${document.getElementById('success-metrics').value}
+- Next steps: ${document.getElementById('next-steps').value}
+            `;
+            
+            // Create download
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'moonshot-plan.txt';
+            a.click();
+        }
+        
+        // Load saved data on page load
+        window.onload = function() {
+            loadData();
+            loadSummaries();
+        };
+        
+        // Auto-save on input
+        document.addEventListener('input', function(e) {
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                saveData();
+            }
+        });
+    </script>
+</body>
+</html>
